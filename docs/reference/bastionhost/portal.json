@@ -3,20 +3,20 @@
     "view": {
         "kind": "Form",
         "properties": {
-            "title": "Enterprise-Scale Analytics - Bastion Host Deployment",
+            "title": "Cloud-Scale Analytics Scenario - Bastion Host Deployment",
             "steps": [
                 {
                     "name": "basics",
                     "label": "Bastion",
                     "elements": [
                         {
-                            "name": "infoBoxEnterpriseScaleAnalytics",
+                            "name": "infoBoxDataManagementAnalytics",
                             "type": "Microsoft.Common.InfoBox",
                             "visible": true,
                             "options": {
-                                "text": "Enterprise-Scale Analytics is a prescriptive reference architecture for data with reference implementation provided by Microsoft. Visit 'aka.ms/adopt/datamanagement' for more details about the solution pattern.",
+                                "text": "Cloud-Scale Analytics Scenario is a prescriptive reference architecture for data with reference implementation provided by Microsoft. Visit 'aka.ms/adopt/datamanagement' for more details about the solution pattern.",
                                 "style": "Info",
-                                "uri": "https://aka.ms/adopt/datamanagement"
+                                "uri": "https://aka.ms/adopt/cloudscaleanalytics"
                             }
                         },
                         {
@@ -67,7 +67,7 @@
                                     "type": "Microsoft.Common.InfoBox",
                                     "visible": true,
                                     "options": {
-                                        "text": "Since not all service features are available in all regions, Enterprise-Scale Analytics is available in a subset of regions.",
+                                        "text": "Since not all service features are available in all regions, this deployment is available in a subset of regions.",
                                         "style": "Info"
                                     }
                                 },
@@ -92,7 +92,7 @@
                                     "filterPlaceholder": "Filter items ...",
                                     "multiLine": true,
                                     "constraints": {
-                                        "allowedValues": "[map(filter(steps('basics').deploymentDetails.locationsApi.value,(item) => contains(split('southafricanorth,southeastasia,japaneast,canadacentral,northeurope,westeurope,francecentral,germanywestcentral,uksouth,centralus,eastus,eastus2,southcentralus,westus2', ','), item.name)),(item) => parse(concat('{\"label\":\"', item.regionalDisplayName, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "allowedValues": "[map(filter(steps('basics').deploymentDetails.locationsApi.value,(item) => contains(split('southafricanorth,australiaeast,centralindia,japaneast,southeastasia,southindia,canadacentral,francecentral,germanywestcentral,northeurope,uksouth,westeurope,brazilsouth,centralus,eastus,eastus2,southcentralus,westcentralus,westus2', ','), item.name)),(item) => parse(concat('{\"label\":\"', item.regionalDisplayName, '\",\"value\":\"', item.name, '\"}')))]",
                                         "required": true
                                     }
                                 }
@@ -109,7 +109,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": true,
                                     "options": {
-                                        "text": "Specify a prefix and select an environment (Development, Test, Production) which will both be used as a prefix for all resource names. Independent of the environment, the same resources get deployed. You can select the same valued as for your Data Landing Zone. The Bastion Host Deploymen can be understood as an addon that can be deployed o top of an existing Data Landing Zone Deployment.",
+                                        "text": "Specify a prefix and select an environment (Development, Test, Production) which will both be used as a prefix for all resource names. Independent of the environment, the same resources get deployed. You can select the same values as for your Data Landing Zone. The Bastion Host Deployment can be understood as an addon that can be deployed on top of an existing Data Landing Zone Deployment.",
                                         "link": {
                                             "label": "",
                                             "uri": ""
@@ -218,21 +218,17 @@
                                         "password": "Password",
                                         "confirmPassword": "Confirm password"
                                     },
-                                    "type": "Microsoft.Compute.CredentialsCombo",
+                                    "type": "Microsoft.Common.PasswordBox",
                                     "visible": true,
-                                    "defaultValue": "",
-                                    "toolTip": {
-                                        "password": "Specify an administrator password for the Virtual Machine."
-                                    },
+                                    "toolTip": "Specify an administrator password for the Virtual Machine.",
                                     "constraints": {
                                         "required": true,
-                                        "customPasswordRegex": "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,128}$",
-                                        "customValidationMessage": "The password must be alphanumeric, contain at least 8 characters, and have at least 1 letter, 1 number and one special character."
+                                        "regex": "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,128}$",
+                                        "validationMessage": "The password must be alphanumeric, contain at least 8 characters, and have at least 1 letter, 1 number and one special character."
                                     },
                                     "options": {
                                         "hideConfirmation": false
-                                    },
-                                    "osPlatform": "Windows"
+                                    }
                                 },
                                 {
                                     "name": "virtualMachineSku",
@@ -262,6 +258,34 @@
                                                 "label": "Standard_DS3_v2",
                                                 "description": "4 vCPUs, 14 GB RAM, 16 Data disks, 12800 Max IOPs, 28 GB Temp Storage",
                                                 "value": "Standard_DS3_v2"
+                                            }
+                                        ],
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "virtualMachineImage",
+                                    "label": "VM Image",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "defaultValue": "Windows 11",
+                                    "toolTip": "Specify the SKU of the Virtual Machine.",
+                                    "multiselect": false,
+                                    "selectAll": false,
+                                    "filter": true,
+                                    "filterPlaceholder": "Filter items ...",
+                                    "multiLine": true,
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "Windows 11",
+                                                "description": "Windows 11 Enterprise 21H2",
+                                                "value": "Windows11"
+                                            },
+                                            {
+                                                "label": "Windows Server 2022",
+                                                "description": "Windows Server 2022 Datacenter",
+                                                "value": "WindowsServer2022"
                                             }
                                         ],
                                         "required": true
@@ -487,8 +511,9 @@
                 "bastionSubnetAddressPrefix": "[if(empty(steps('connectivitySettings').subnetConfiguration.bastionSubnetCidrRange), '', steps('connectivitySettings').subnetConfiguration.bastionSubnetCidrRange)]",
                 "jumpboxSubnetAddressPrefix": "[if(empty(steps('connectivitySettings').subnetConfiguration.jumpboxSubnetAddressPrefix), '', steps('connectivitySettings').subnetConfiguration.jumpboxSubnetAddressPrefix)]",
                 "virtualMachineSku": "[if(empty(steps('generalSettings').virtualMachineSettings.virtualMachineSku), '', steps('generalSettings').virtualMachineSettings.virtualMachineSku)]",
+                "virtualMachineImage": "[if(empty(steps('generalSettings').virtualMachineSettings.virtualMachineImage), '', steps('generalSettings').virtualMachineSettings.virtualMachineImage)]",
                 "administratorUsername": "[if(empty(steps('generalSettings').virtualMachineSettings.administratorUsername), '', steps('generalSettings').virtualMachineSettings.administratorUsername)]",
-                "administratorPassword": "[if(empty(steps('generalSettings').virtualMachineSettings.administratorPassword.password), '', steps('generalSettings').virtualMachineSettings.administratorPassword.password)]"
+                "administratorPassword": "[if(empty(steps('generalSettings').virtualMachineSettings.administratorPassword), '', steps('generalSettings').virtualMachineSettings.administratorPassword)]"
             }
         }
     }

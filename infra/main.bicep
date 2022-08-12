@@ -20,12 +20,16 @@ param prefix string
 @description('Specifies the tags that you want to apply to all resources.')
 param tags object = {}
 
+// Resource parameters
+@description('Specifies the list of user object IDs that are assigned as collection admin to the root collection in Purview.')
+param purviewRootCollectionAdminObjectIds array = []
+
 // Network parameters
 @description('Specifies whether firewall and private DNS Zones should be deployed.')
 param enableDnsAndFirewallDeployment bool = true
 @description('Specifies the address space of the vnet.')
 param vnetAddressPrefix string = '10.0.0.0/16'
-@description('Specifies the address space of the subnet that is use for Azure Firewall.')
+@description('Specifies the address space of the subnet that is use for Azure Firewall. Optional if `enableDnsAndFirewallDeployment` is set to `true`.')
 param azureFirewallSubnetAddressPrefix string = '10.0.0.0/24'
 @description('Specifies the address space of the subnet that is used for the services.')
 param servicesSubnetAddressPrefix string = '10.0.1.0/24'
@@ -35,6 +39,12 @@ param firewallPrivateIp string = '10.0.0.4'
 param dnsServerAdresses array = [
   '10.0.0.4'
 ]
+@allowed([
+  'Standard'
+  'Premium'
+])
+@description('Specifies the tier of the Azure Firewall.  Optional if `enableDnsAndFirewallDeployment` is set to `false`.')
+param firewallTier string = 'Premium'
 @description('Specifies the resource ID of the Azure Firewall Policy. Optional parameter allows you to deploy Firewall rules to an existing Firewall Policy if `enableDnsAndFirewallDeployment` is set to `false`.')
 param firewallPolicyId string = ''
 
@@ -59,8 +69,8 @@ param privateDnsZoneIdSynapse string = ''
 // Variables
 var name = toLower('${prefix}-${environment}')
 var tagsDefault = {
-  Owner: 'Enterprise Scale Analytics'
-  Project: 'Enterprise Scale Analytics'
+  Owner: 'Data Management and Analytics Scenario'
+  Project: 'Data Management and Analytics Scenario'
   Environment: environment
   Toolkit: 'bicep'
   Name: name
@@ -88,6 +98,7 @@ module networkServices 'modules/network.bicep' = {
     dnsServerAdresses: dnsServerAdresses
     enableDnsAndFirewallDeployment: enableDnsAndFirewallDeployment
     firewallPrivateIp: firewallPrivateIp
+    firewallTier: firewallTier
     firewallPolicyId: firewallPolicyId
   }
 }
@@ -185,6 +196,18 @@ resource automationResourceGroup 'Microsoft.Resources/resourceGroups@2021-01-01'
   properties: {}
 }
 
+module automationResources 'modules/automation.bicep' = {
+  name: 'automationResources'
+  scope: automationResourceGroup
+  params: {
+    location: location
+    tags: tagsJoined
+    prefix: name
+    purviewId: governanceResources.outputs.purviewId
+    purviewRootCollectionAdminObjectIds: purviewRootCollectionAdminObjectIds
+  }
+}
+
 // Management services
 resource managementResourceGroup 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   name: '${name}-mgmt'
@@ -197,6 +220,8 @@ resource managementResourceGroup 'Microsoft.Resources/resourceGroups@2021-01-01'
 output vnetId string = networkServices.outputs.vnetId
 output firewallPrivateIp string = networkServices.outputs.firewallPrivateIp
 output purviewId string = governanceResources.outputs.purviewId
+output purviewManagedStorageId string = governanceResources.outputs.purviewManagedStorageId
+output purviewManagedEventHubId string = governanceResources.outputs.purviewManagedEventHubId
 output privateDnsZoneIdKeyVault string = enableDnsAndFirewallDeployment ? globalDnsZones.outputs.privateDnsZoneIdKeyVault : ''
 output privateDnsZoneIdDataFactory string = enableDnsAndFirewallDeployment ? globalDnsZones.outputs.privateDnsZoneIdDataFactory : ''
 output privateDnsZoneIdDataFactoryPortal string = enableDnsAndFirewallDeployment ? globalDnsZones.outputs.privateDnsZoneIdDataFactoryPortal : ''

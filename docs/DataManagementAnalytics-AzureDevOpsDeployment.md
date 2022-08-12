@@ -1,4 +1,4 @@
-# Data Management Zone - Azure DevOps Deployment
+# Data Management Landing Zone - Azure DevOps Deployment
 
 In the previous step we have generated a JSON output similar to the following, which will be required in the next steps:
 
@@ -26,7 +26,7 @@ First, you need to create an Azure Resource Manager service connection. To do so
 1. On the next page select **Service principal (manual)**.
 1. Select the appropriate environment to which you would like to deploy the templates. Only the default option **Azure Cloud** is currently supported.
 1. For the **Scope Level**, select **Subscription** and enter your `subscription Id` and `name`.
-1. Enter the details of the service principal that we have generated in step 3. (**Service Principal Id** = **clientId**, **Service Principal Key** = **clientSecret**, **Tenant ID** = **tenantId**) and click on **Verify** to make sure that the connection works.
+1. Enter the details of the service principal that we have generated in step 3. (**Service Principal ID** = **clientId**, **Service Principal Key** = **clientSecret**, **Tenant ID** = **tenantId**) and click on **Verify** to make sure that the connection works.
 1. Enter a user-friendly **Connection name** to use when referring to this service connection. Take note of the name because this will be required in the parameter update process.
 1. Optionally, enter a **Description**.
 1. Click on **Verify and save**.
@@ -59,8 +59,8 @@ The following table explains each of the parameters:
 
 | Parameter                                   | Description  | Sample value |
 |:--------------------------------------------|:-------------|:-------------|
-| **AZURE_SUBSCRIPTION_ID**                   | Specifies the subscription ID of the Data Management Zone where all the resources will be deployed | <div style="width: 36ch">`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`</div> |
-| **AZURE_LOCATION**                          | Specifies the region where you want the resources to be deployed. Please check [Supported Regions](/docs/EnterpriseScaleAnalytics-Prerequisites.md). | `northeurope` |
+| **AZURE_SUBSCRIPTION_ID**                   | Specifies the subscription ID of the Data Management Landing Zone where all the resources will be deployed | <div style="width: 36ch">`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`</div> |
+| **AZURE_LOCATION**                          | Specifies the region where you want the resources to be deployed. Please check [Supported Regions](/docs/DataManagementAnalytics-Prerequisites.md#supported-regions). | `northeurope` |
 | **AZURE_RESOURCE_MANAGER _CONNECTION_NAME** | Specifies the resource manager connection name in Azure DevOps. More details on how to create the resource manager service connection in Azure DevOps was described in the previous paragraph or [here](https://docs.microsoft.com/azure/devops/pipelines/library/connect-to-azure?view=azure-devops#create-an-azure-resource-manager-service-connection-with-an-existing-service-principal). | `my-connection-name` |
 
 ### Configure `params.dev.json`
@@ -69,25 +69,26 @@ To begin, please open the [infra/params.dev.json](/infra/params.dev.json). In th
 
 | Parameter                                | Description  | Sample value |
 |:-----------------------------------------|:-------------|:-------------|
-| location | Specifies the location for all resources. | `northeurope` |
-| environment | Specifies the environment of the deployment. | `dev`, `tst` or `prd` |
-| prefix | Specifies the prefix for all resources created in this deployment. | `prefi` |
-| tags | Specifies the tags that you want to apply to all resources. | {`key`: `value`} |
-| vnetAddressPrefix | Specifies the address space of the vnet. | `10.0.0.0/16` |
-| azureFirewallSubnetAddressPrefix | Specifies the address space of the subnet that is use for Azure Firewall. | `10.0.0.0/24` |
-| servicesSubnetAddressPrefix | Specifies the address space of the subnet that is used for the services. | `10.0.1.0/24` |
-| enableDnsAndFirewallDeployment | Specifies whether firewall and private DNS Zones should be deployed. | `true` |
-| firewallPrivateIp | Specifies the private IP address of the central firewall. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `10.0.0.4` |
-| dnsServerAdresses | Specifies the private IP addresses of the dns servers. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | [ `10.0.0.4` ] |
-| firewallPolicyId | Specifies the resource ID of the Azure Firewall Policy. Optional parameter allows you to deploy Firewall rules to an existing Firewall Policy if `enableDnsAndFirewallDeployment` is set to `false`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/firewallPolicies/{firewallpolicy-name}` |
-| privateDnsZoneIdContainerRegistry | Specifies the resource ID of the private DNS zone for Container Registry. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io` |
-| privateDnsZoneIdKeyVault | Specifies the resource ID of the private DNS zone for Key Vault. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.vaultcore.azure.net` |
-| privateDnsZoneIdNamespace | Specifies the resource ID of the private DNS zone for EventHub namespaces. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.servicebus.windows.net` |
-| privateDnsZoneIdPurview | Specifies the resource ID of the private DNS zone for Purview. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.purview.azure.com` |
-| privateDnsZoneIdPurviewPortal | Specifies the resource ID of the private DNS zone for Purview Portal. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.purviewstudio.azure.com` |
-| privateDnsZoneIdBlob | Specifies the resource ID of the private DNS zone for Blob storage. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net` |
-| privateDnsZoneIdQueue | Specifies the resource ID of the private DNS zone for Queue storage. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.queue.core.windows.net` |
-| privateDnsZoneIdSynapse | Specifies the resource ID of the private DNS zone for Synapse. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.azuresynapse.net` |
+| `location` | Specifies the location for all resources. | `northeurope` |
+| `environment` | Specifies the environment of the deployment. | `dev`, `tst` or `prd` |
+| `prefix` | Specifies the prefix for all resources created in this deployment. | `prefi` |
+| `tags` | Specifies the tags that you want to apply to all resources. | {`key`: `value`} |
+| `purviewRootCollectionAdminObjectIds` | Specifies the list of user object IDs that are assigned as collection admin to the root collection in Purview. To get the object ID for a user use the following Azure CLI command: `az ad user list --display-name "{user name}" --query "[].objectId"`. | [`{object-id-1}`, `{object-id-2}`] |
+| `vnetAddressPrefix` | Specifies the address space of the vnet. | `10.0.0.0/16` |
+| `azureFirewallSubnetAddressPrefix` | Specifies the address space of the subnet that is use for Azure Firewall. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `10.0.0.0/24` |
+| `servicesSubnetAddressPrefix` | Specifies the address space of the subnet that is used for the services. | `10.0.1.0/24` |
+| `enableDnsAndFirewallDeployment` | Specifies whether firewall and private DNS Zones should be deployed. | `true` |
+| `firewallPrivateIp` | Specifies the private IP address of the central firewall. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `10.0.0.4` |
+| `dnsServerAdresses` | Specifies the private IP addresses of the dns servers. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | [ `10.0.0.4` ] |
+| `firewallPolicyId` | Specifies the resource ID of the Azure Firewall Policy. Optional parameter allows you to deploy Firewall rules to an existing Firewall Policy if `enableDnsAndFirewallDeployment` is set to `false`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/firewallPolicies/{firewallpolicy-name}` |
+| `privateDnsZoneIdContainerRegistry` | Specifies the resource ID of the private DNS zone for Container Registry. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io` |
+| `privateDnsZoneIdKeyVault` | Specifies the resource ID of the private DNS zone for Key Vault. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.vaultcore.azure.net` |
+| `privateDnsZoneIdNamespace` | Specifies the resource ID of the private DNS zone for EventHub namespaces. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.servicebus.windows.net` |
+| `privateDnsZoneIdPurview` | Specifies the resource ID of the private DNS zone for Purview. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.purview.azure.com` |
+| `privateDnsZoneIdPurviewPortal` | Specifies the resource ID of the private DNS zone for Purview Portal. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.purviewstudio.azure.com` |
+| `privateDnsZoneIdBlob` | Specifies the resource ID of the private DNS zone for Blob storage. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net` |
+| `privateDnsZoneIdQueue` | Specifies the resource ID of the private DNS zone for Queue storage. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.queue.core.windows.net` |
+| `privateDnsZoneIdSynapse` | Specifies the resource ID of the private DNS zone for Synapse. Optional if `enableDnsAndFirewallDeployment` is set to `true`. | `/subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Network/privateDnsZones/privatelink.azuresynapse.net` |
 
 ### Install Azure DevOps Pipelines GitHub Application
 
@@ -127,7 +128,7 @@ As a last step, you need to create an Azure DevOps pipeline in your project base
 
 1. Click on **Continue** and then on **Run**.
 
-## Merge these changes back to the `main` branch of your repo
+## Merge these changes back to the `main` branch of your repository
 
 After following the instructions and updating the parameters and variables in your repository in a separate branch and opening the pull request, you can merge the pull request back into the `main` branch of your repository by clicking on **Merge pull request**. Finally, you can click on **Delete branch** to clean up your repository. By doing this, you trigger the deployment workflow.
 
@@ -135,7 +136,11 @@ After following the instructions and updating the parameters and variables in yo
 
 **Congratulations!** You have successfully executed all steps to deploy the template into your environment through Azure DevOps.
 
-Now, you can navigate to the pipeline that you have created as part of step 5 and monitor it as each service is deployed. If you run into any issues, please check the [Known Issues](/docs/EnterpriseScaleAnalytics-KnownIssues.md) first and open an [issue](https://github.com/Azure/data-management-zone/issues) if you come accross a potential bug in the repository.
+Now, you can navigate to the pipeline that you have created as part of step 5 and monitor it as each service is deployed. If you run into any issues, please check the [Known Issues](/docs/DataManagementAnalytics-KnownIssues.md) first and open an [issue](https://github.com/Azure/data-management-zone/issues) if you come accross a potential bug in the repository.
 
->[Previous](/docs/EnterpriseScaleAnalytics-ServicePrincipal.md)
->[Next](/docs/EnterpriseScaleAnalytics-KnownIssues.md)
+## Add Root Collection Administrator role to Purview account
+
+Since the Purview account is being deployed using a Service Principal, at this point, the only identity that has access to the Purview data plane, is the Service Principal. Use the [instructions in this guide](https://docs.microsoft.com/azure/purview/tutorial-metadata-policy-collections-apis#add-the-root-collection-administrator-role) to assign additional user accounts to the Purview Root Collection as Collection Admin.
+
+>[Previous](/docs/DataManagementAnalytics-ServicePrincipal.md)
+>[Next](/docs/DataManagementAnalytics-KnownIssues.md)

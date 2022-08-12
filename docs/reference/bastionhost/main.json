@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.613.9944",
-      "templateHash": "16612088227531531207"
+      "version": "0.4.1008.15138",
+      "templateHash": "12653787604786881755"
     }
   },
   "parameters": {
@@ -81,6 +81,17 @@
         "description": "Specifies the SKU of the virtual machine that gets created."
       }
     },
+    "virtualMachineImage": {
+      "type": "string",
+      "defaultValue": "Windows11",
+      "metadata": {
+        "description": "Specifies the image of the virtual machine that gets created."
+      },
+      "allowedValues": [
+        "Windows11",
+        "WindowsServer2022"
+      ]
+    },
     "administratorUsername": {
       "type": "string",
       "defaultValue": "VmMainUser",
@@ -99,8 +110,8 @@
   "variables": {
     "name": "[toLower(format('{0}-{1}', parameters('prefix'), parameters('environment')))]",
     "tagsDefault": {
-      "Owner": "Enterprise Scale Analytics",
-      "Project": "Enterprise Scale Analytics",
+      "Owner": "Data Management and Analytics Scenario",
+      "Project": "Data Management and Analytics Scenario",
       "Environment": "[parameters('environment')]",
       "Toolkit": "bicep",
       "Name": "[variables('name')]"
@@ -121,7 +132,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2020-06-01",
       "name": "networkServices",
       "subscriptionId": "[variables('vnetSubscriptionId')]",
       "resourceGroup": "[variables('vnetResourceGroupName')]",
@@ -162,8 +173,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.613.9944",
-              "templateHash": "13030817408545927700"
+              "version": "0.4.1008.15138",
+              "templateHash": "10187757659530357192"
             }
           },
           "parameters": {
@@ -421,7 +432,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2020-06-01",
       "name": "bastionServices",
       "resourceGroup": "[format('{0}-bastion', variables('name'))]",
       "properties": {
@@ -442,11 +453,14 @@
           "virtualMachineSku": {
             "value": "[parameters('virtualMachineSku')]"
           },
+          "virtualMachineImage": {
+            "value": "[parameters('virtualMachineImage')]"
+          },
           "bastionSubnetId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetSubscriptionId'), variables('vnetResourceGroupName')), 'Microsoft.Resources/deployments', 'networkServices'), '2019-10-01').outputs.bastionSubnetId.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetSubscriptionId'), variables('vnetResourceGroupName')), 'Microsoft.Resources/deployments', 'networkServices'), '2020-06-01').outputs.bastionSubnetId.value]"
           },
           "jumpboxSubnetId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetSubscriptionId'), variables('vnetResourceGroupName')), 'Microsoft.Resources/deployments', 'networkServices'), '2019-10-01').outputs.jumpboxSubnetId.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetSubscriptionId'), variables('vnetResourceGroupName')), 'Microsoft.Resources/deployments', 'networkServices'), '2020-06-01').outputs.jumpboxSubnetId.value]"
           },
           "administratorUsername": {
             "value": "[parameters('administratorUsername')]"
@@ -461,8 +475,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.613.9944",
-              "templateHash": "5974803606266919289"
+              "version": "0.4.1008.15138",
+              "templateHash": "2672844143716454115"
             }
           },
           "parameters": {
@@ -485,6 +499,14 @@
               "type": "string",
               "defaultValue": "Standard_DS2_v2"
             },
+            "virtualMachineImage": {
+              "type": "string",
+              "defaultValue": "Windows11",
+              "allowedValues": [
+                "Windows11",
+                "WindowsServer2022"
+              ]
+            },
             "administratorUsername": {
               "type": "string",
               "defaultValue": "VmMainUser"
@@ -501,7 +523,7 @@
           "resources": [
             {
               "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2019-10-01",
+              "apiVersion": "2020-06-01",
               "name": "bastion001",
               "properties": {
                 "expressionEvaluationOptions": {
@@ -528,8 +550,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.4.613.9944",
-                      "templateHash": "11836717545045514781"
+                      "version": "0.4.1008.15138",
+                      "templateHash": "9194233898920649047"
                     }
                   },
                   "parameters": {
@@ -602,7 +624,7 @@
             },
             {
               "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2019-10-01",
+              "apiVersion": "2020-06-01",
               "name": "virtualMachine001",
               "properties": {
                 "expressionEvaluationOptions": {
@@ -625,6 +647,9 @@
                   "virtualMachineSku": {
                     "value": "[parameters('virtualMachineSku')]"
                   },
+                  "virtualMachineImage": {
+                    "value": "[parameters('virtualMachineImage')]"
+                  },
                   "administratorUsername": {
                     "value": "[parameters('administratorUsername')]"
                   },
@@ -638,8 +663,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.4.613.9944",
-                      "templateHash": "223020605881141162"
+                      "version": "0.4.1008.15138",
+                      "templateHash": "8684162141135901545"
                     }
                   },
                   "parameters": {
@@ -656,6 +681,14 @@
                       "type": "string",
                       "defaultValue": "Standard_DS2_v2"
                     },
+                    "virtualMachineImage": {
+                      "type": "string",
+                      "defaultValue": "Windows11",
+                      "allowedValues": [
+                        "Windows11",
+                        "WindowsServer2022"
+                      ]
+                    },
                     "administratorUsername": {
                       "type": "string",
                       "defaultValue": "VmMainUser"
@@ -670,7 +703,19 @@
                   "functions": [],
                   "variables": {
                     "nicName": "[format('{0}-nic', parameters('virtualmachineName'))]",
-                    "diskName": "[format('{0}-disk', parameters('virtualmachineName'))]"
+                    "diskName": "[format('{0}-disk', parameters('virtualmachineName'))]",
+                    "imageReferenceWindows11": {
+                      "publisher": "microsoftwindowsdesktop",
+                      "offer": "windows-11",
+                      "sku": "win11-21h2-ent",
+                      "version": "latest"
+                    },
+                    "imageReferenceWindowsServer2022": {
+                      "publisher": "MicrosoftWindowsServer",
+                      "offer": "WindowsServer",
+                      "sku": "2022-datacenter",
+                      "version": "latest"
+                    }
                   },
                   "resources": [
                     {
@@ -729,12 +774,7 @@
                         },
                         "priority": "Regular",
                         "storageProfile": {
-                          "imageReference": {
-                            "offer": "WindowsServer",
-                            "publisher": "MicrosoftWindowsServer",
-                            "sku": "2022-datacenter",
-                            "version": "latest"
-                          },
+                          "imageReference": "[if(equals(parameters('virtualMachineImage'), 'Windows11'), variables('imageReferenceWindows11'), variables('imageReferenceWindowsServer2022'))]",
                           "osDisk": {
                             "name": "[variables('diskName')]",
                             "caching": "ReadWrite",

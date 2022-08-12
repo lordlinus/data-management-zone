@@ -14,6 +14,9 @@
         "tags": {
             "value": {}
         },
+        "purviewRootCollectionAdminObjectIds": {
+            "value": []
+        },
         "vnetAddressPrefix": {
             "value": "10.0.0.0/16"
         },
@@ -30,6 +33,9 @@
             "value": [
               "10.0.0.4"
             ]
+        },
+        "firewallTier": {
+            "value": "Premium"
         },
         "firewallPolicyId": {
             "value": ""

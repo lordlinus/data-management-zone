@@ -1,4 +1,4 @@
-# Data Management Zone - Create repository from the template
+# Data Management Landing Zone - Create repository from the template
 
 First, you must generate your own respository based off this template respository. To do so, please follow the steps below:
 
@@ -16,5 +16,5 @@ First, you must generate your own respository based off this template respositor
 1. Optionally, to include the directory structure and files from all branches in the template and not just the default branch, select **Include all branches**.
 1. Click **Create repository from template**.
 
->[Previous](/docs/EnterpriseScaleAnalytics-Prerequisites.md)
->[Next](/docs/EnterpriseScaleAnalytics-ServicePrincipal.md)
+>[Previous](/docs/DataManagementAnalytics-Prerequisites.md)
+>[Next](/docs/DataManagementAnalytics-ServicePrincipal.md)

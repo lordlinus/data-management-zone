@@ -50,7 +50,7 @@ module keyVault001 'services/keyvault.bicep' = {
   }
 }
 
-module purviewKeyVaultRoleAssignment 'auxiliary/purviewRoleAssignment.bicep' = {
+module purviewKeyVaultRoleAssignment 'auxiliary/purviewRoleAssignmentKeyVault.bicep' = {
   name: 'purviewKeyVaultRoleAssignment'
   scope: resourceGroup()
   params: {
@@ -61,3 +61,5 @@ module purviewKeyVaultRoleAssignment 'auxiliary/purviewRoleAssignment.bicep' = {
 
 // Outputs
 output purviewId string = purview001.outputs.purviewId
+output purviewManagedStorageId string = purview001.outputs.purviewManagedStorageId
+output purviewManagedEventHubId string = purview001.outputs.purviewManagedEventHubId

@@ -51,12 +51,30 @@ jobs:
           deploymentMode: Validate
           failOnStdErr: false
 
+      # Deploy Data Management Zone - what-if
+      - name: Deploy Data Management Zone - what-if
+        id: data_management_zone_whatif
+        uses: azure/CLI@v1
+        with:
+          azcliversion: "agentazcliversion"
+          inlineScript: |
+            az account set \
+              --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+            
+            az deployment sub what-if \
+              --location ${{ env.AZURE_LOCATION }} \
+              --subscription ${{ env.AZURE_SUBSCRIPTION_ID }} \
+              --exclude-change-types Ignore NoChange Unsupported \
+              --template-file "${GITHUB_WORKSPACE}/infra/main.json" \
+              --parameters "${GITHUB_WORKSPACE}/infra/params.dev.json" \
+              --result-format "FullResourcePayloads"
+
       # Log out from Azure
       - name: Log out from Azure
         id: azure_logout
         uses: azure/cli@v1
         with:
-          azcliversion: latest
+          azcliversion: "agentazcliversion"
           inlineScript: |
             az logout
 
@@ -99,6 +117,6 @@ jobs:
         id: azure_logout
         uses: azure/cli@v1
         with:
-          azcliversion: latest
+          azcliversion: "agentazcliversion"
           inlineScript: |
             az logout
